@@ -2,12 +2,9 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
-# ---------------------------------------------------------------------
+
 # ACTOR TABLES
-# Each actor links back to Django's built-in User model (OneToOneField)
-# so we get secure password hashing, sessions, and auth for free, while
-# still keeping three distinct tables as per the ERD.
-# ---------------------------------------------------------------------
+
 
 class Resident(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='resident')
@@ -45,9 +42,9 @@ class Administrator(models.Model):
         return self.full_name
 
 
-# ---------------------------------------------------------------------
-# WASTE REPORT (the "complaint" raised by a Resident)
-# ---------------------------------------------------------------------
+
+# WASTE REPORT 
+
 
 class WasteReport(models.Model):
     STATUS_CHOICES = [
@@ -83,9 +80,8 @@ class WasteReport(models.Model):
         return f"{self.waste_type} report at {self.location} ({self.status})"
 
 
-# ---------------------------------------------------------------------
-# COLLECTION SCHEDULE (set by a WasteServiceProvider)
-# ---------------------------------------------------------------------
+
+# COLLECTION SCHEDULE 
 
 class CollectionSchedule(models.Model):
     provider = models.ForeignKey(WasteServiceProvider, on_delete=models.CASCADE, related_name='schedules')
@@ -100,9 +96,9 @@ class CollectionSchedule(models.Model):
         return f"{self.zone} - {self.collection_date} ({self.waste_type})"
 
 
-# ---------------------------------------------------------------------
+
 # RECYCLING GUIDE (set by a WasteServiceProvider)
-# ---------------------------------------------------------------------
+
 
 class RecyclingGuide(models.Model):
     provider = models.ForeignKey(WasteServiceProvider, on_delete=models.CASCADE, related_name='recycling_guides')
@@ -115,9 +111,9 @@ class RecyclingGuide(models.Model):
         return self.title
 
 
-# ---------------------------------------------------------------------
-# NOTIFICATION (polymorphic recipient, nullable complaint/report link)
-# ---------------------------------------------------------------------
+
+# NOTIFICATION 
+
 
 class Notification(models.Model):
     RECIPIENT_TYPE_CHOICES = [
@@ -140,9 +136,8 @@ class Notification(models.Model):
         return f"To {self.recipient_type} #{self.recipient_id}: {self.message[:40]}"
 
 
-# ---------------------------------------------------------------------
-# SYSTEM LOG (admin auditing of resident/provider activity)
-# ---------------------------------------------------------------------
+
+# SYSTEM LOG 
 
 class SystemLog(models.Model):
     ACTOR_TYPE_CHOICES = [
