@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="auth-form">
+    <h2>Login</h2>
+    <form method="POST">
+        {% csrf_token %}
+        <label for="username">Username</label>
+        <input type="text" name="username" id="username" required>
+
+        <label for="password">Password</label>
+        <input type="password" name="password" id="password" required>
+
+        <button type="submit">Login</button>
+    </form>
+
+    <p>Not registered yet?</p>
+    <a href="{% url 'register_resident' %}">Register as Resident</a> |
+    <a href="{% url 'register_provider' %}">Register as Waste Service Provider</a>
+</div>
+{% endblock %}
