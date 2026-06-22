@@ -206,6 +206,14 @@ form textarea {
     margin-top: 4px;
 }
 
+.hidden {
+    display: none;
+}
+
+.inline-form {
+    display: inline;
+}
+
 .auth-form button,
 .form-container button[type="submit"] {
     margin-top: 20px;
@@ -263,17 +271,16 @@ form textarea {
 
 .dashboard-links li a {
     display: block;
-    background: white;
-    border: 1px solid #d1d5db;
+    background: #1b5e20;
+    border: 1px solid #1b5e20;
     border-radius: 8px;
-    border-bottom: 3px solid #2c8f5a;
-    padding: 12px;
+    padding: 12px 14px;
     text-decoration: none;
-    color: #1f2937;
+    color: white;
 }
 
 .dashboard-links li a:hover {
-    background: #f9fafb;
+    background: #14441a;
 }
 
 /* ---------- Tables ---------- */

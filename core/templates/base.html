@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -32,6 +33,7 @@
         {% block content %}{% endblock %}
     </main>
 
+    <script src="{% static 'js/shared/forms.js' %}"></script>
     {% block extra_js %}{% endblock %}
 </body>
 </html>

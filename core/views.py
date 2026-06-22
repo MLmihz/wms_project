@@ -89,10 +89,15 @@ def register_resident(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
+        confirm_password = request.POST.get('confirm_password')
         full_name = request.POST.get('full_name')
         phone_number = request.POST.get('phone_number', '')
         address = request.POST.get('address', '')
         zone = request.POST.get('zone', '')
+
+        if password != confirm_password:
+            messages.error(request, "Passwords do not match.")
+            return render(request, 'auth/register_resident.html')
 
         if User.objects.filter(username=username).exists():
             messages.error(request, "Username already taken.")
@@ -116,9 +121,14 @@ def register_provider(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
+        confirm_password = request.POST.get('confirm_password')
         company_name = request.POST.get('company_name')
         phone_number = request.POST.get('phone_number', '')
         coverage_zone = request.POST.get('coverage_zone', '')
+
+        if password != confirm_password:
+            messages.error(request, "Passwords do not match.")
+            return render(request, 'provider/register.html')
 
         if User.objects.filter(username=username).exists():
             messages.error(request, "Username already taken.")
@@ -279,6 +289,42 @@ def provider_dashboard(request):
     schedules_count = CollectionSchedule.objects.filter(provider=profile).count()
     guides_count = RecyclingGuide.objects.filter(provider=profile).count()
 
+    now = timezone.localtime()
+    zone_status = []
+    zones = (
+        CollectionSchedule.objects
+        .filter(provider=profile)
+        .values_list('zone', flat=True)
+        .distinct()
+    )
+    for zone in zones:
+        latest_schedule = (
+            CollectionSchedule.objects
+            .filter(provider=profile, zone=zone)
+            .order_by('-collection_date', '-collection_time')
+            .first()
+        )
+        if latest_schedule is None:
+            continue
+
+        scheduled_at = timezone.make_aware(
+            timezone.datetime.combine(
+                latest_schedule.collection_date,
+                latest_schedule.collection_time,
+            )
+        )
+        zone_status.append({
+            'zone': zone,
+            'scheduled_at': scheduled_at,
+            'is_done': scheduled_at <= now,
+        })
+
+    zone_status.sort(key=lambda row: row['zone'].lower())
+
+    residents_for_points = Resident.objects.filter(is_active=True).order_by('full_name')
+    if profile.coverage_zone:
+        residents_for_points = residents_for_points.filter(zone__iexact=profile.coverage_zone)
+
     return render(request, 'provider/dashboard.html', {
         'provider': profile,
         'my_reports': my_reports,
@@ -287,6 +333,9 @@ def provider_dashboard(request):
         'collected_my_reports': collected_my_reports,
         'schedules_count': schedules_count,
         'guides_count': guides_count,
+        'zone_status': zone_status,
+        'residents_for_points': residents_for_points,
+        'waste_type_choices': WasteReport.WASTE_TYPE_CHOICES,
     })
 
 
@@ -320,7 +369,12 @@ def create_admin(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
+        confirm_password = request.POST.get('confirm_password')
         full_name = request.POST.get('full_name')
+
+        if password != confirm_password:
+            messages.error(request, "Passwords do not match.")
+            return render(request, 'admin/create_admin.html')
 
         if User.objects.filter(username=username).exists():
             messages.error(request, "Username already taken.")
@@ -482,35 +536,21 @@ def update_report_status(request, report_id):
 
     if request.method == 'POST':
         new_status = request.POST.get('status')
-        points_awarded = request.POST.get('points_awarded', '0').strip()
-        try:
-            points_awarded = int(points_awarded or '0')
-            if points_awarded < 0:
-                raise ValueError
-        except ValueError:
-            points_awarded = 0
 
         if new_status in dict(WasteReport.STATUS_CHOICES):
             report.status = new_status
             if new_status == 'collected':
                 report.date_resolved = timezone.now()
-                if points_awarded > 0:
-                    report.resident.points += points_awarded
-                    report.resident.save(update_fields=['points'])
             else:
                 report.date_resolved = None
             report.save()
-
-            reward_message = ""
-            if new_status == 'collected' and points_awarded > 0:
-                reward_message = f" You received {points_awarded} points."
 
             Notification.objects.create(
                 recipient_type='resident',
                 recipient_id=report.resident.id,
                 message=(
                     f"Your waste report at {report.location} is now: "
-                    f"{report.get_status_display()}.{reward_message}"
+                    f"{report.get_status_display()}."
                 ),
                 waste_report=report,
             )
@@ -518,17 +558,66 @@ def update_report_status(request, report_id):
             SystemLog.objects.create(
                 actor_type='provider',
                 actor_id=provider_profile.id,
-                action=(
-                    f"updated waste report #{report.id} to status '{new_status}'"
-                    f" and awarded {points_awarded} points"
-                    if points_awarded > 0
-                    else f"updated waste report #{report.id} to status '{new_status}'"
-                ),
+                action=f"updated waste report #{report.id} to status '{new_status}'",
             )
 
             messages.success(request, "Report status updated.")
 
     return redirect('view_waste_reports')
+
+
+@login_required
+def assign_collection_points(request):
+    provider_profile = _require_role(request, 'provider')
+    if provider_profile is None:
+        return redirect('home')
+
+    if request.method != 'POST':
+        messages.error(request, "Invalid request method.")
+        return redirect('provider_dashboard')
+
+    resident_id = request.POST.get('resident_id')
+    waste_type = request.POST.get('waste_type', '').strip()
+    quantity_kg = request.POST.get('quantity_kg', '').strip()
+
+    resident = get_object_or_404(Resident, id=resident_id, is_active=True)
+
+    if provider_profile.coverage_zone and resident.zone and resident.zone.lower() != provider_profile.coverage_zone.lower():
+        messages.error(request, "You can only assign collection points to residents in your coverage zone.")
+        return redirect('provider_dashboard')
+
+    points_raw = request.POST.get('points', '0').strip()
+    try:
+        points = int(points_raw or '0')
+        if points <= 0:
+            raise ValueError
+    except ValueError:
+        messages.error(request, "Please enter a valid positive points value.")
+        return redirect('provider_dashboard')
+
+    resident.points += points
+    resident.save(update_fields=['points'])
+
+    collection_note = ""
+    if waste_type:
+        collection_note = f" for {waste_type.replace('_', ' ')}"
+    if quantity_kg:
+        collection_note += f" ({quantity_kg} kg)"
+
+    Notification.objects.create(
+        recipient_type='resident',
+        recipient_id=resident.id,
+        message=f"You have been awarded {points} points for recycled collection{collection_note}.",
+    )
+
+    SystemLog.objects.create(
+        actor_type='provider',
+        actor_id=provider_profile.id,
+        action=f"awarded {points} collection points to resident #{resident.id}{collection_note}",
+    )
+
+    messages.success(request, f"Awarded {points} collection points to {resident.full_name}.")
+    return redirect('provider_dashboard')
 
 # PROVIDER VIEWS AND CREATES COLLECTION SCHEDULES
 

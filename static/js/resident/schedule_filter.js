@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (shouldShow) visibleCount++;
         });
 
-        noResults.style.display = visibleCount === 0 ? 'block' : 'none';
+        noResults.classList.toggle('hidden', visibleCount !== 0);
     }
 
     zoneFilter.addEventListener('change', applyFilters);

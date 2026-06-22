@@ -1,6 +1,5 @@
 {% extends 'base.html' %}
 {% block title %}Waste Reports{% endblock %}
-{% block extra_css %}<link rel="stylesheet" href="/static/css/provider.css">{% endblock %}
 
 {% block content %}
 <h1>Waste Reports</h1>
@@ -39,7 +38,7 @@
         <th>Location</th>
         <th>Status</th>
         <th>Reported</th>
-        <th>Update Status and Points</th>
+        <th>Update Status</th>
     </tr>
     {% for report in my_reports %}
     <tr>
@@ -55,7 +54,6 @@
                     <option value="{{ value }}" {% if report.status == value %}selected{% endif %}>{{ label }}</option>
                     {% endfor %}
                 </select>
-                <input type="number" name="points_awarded" min="0" value="0" placeholder="Points for resident">
                 <button type="submit">Update</button>
             </form>
         </td>

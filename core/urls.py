@@ -28,6 +28,7 @@ urlpatterns = [
     path('provider/reports/', views.view_waste_reports, name='view_waste_reports'),
     path('provider/reports/<int:report_id>/claim/', views.claim_report, name='claim_report'),
     path('provider/reports/<int:report_id>/update/', views.update_report_status, name='update_report_status'),
+    path('provider/collection-points/assign/', views.assign_collection_points, name='assign_collection_points'),
     path('provider/schedules/', views.manage_schedules, name='manage_schedules'),
     path('provider/schedules/<int:schedule_id>/delete/', views.delete_schedule, name='delete_schedule'),
     path('provider/recycling-guides/', views.manage_recycling_guides, name='manage_recycling_guides'),

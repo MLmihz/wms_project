@@ -7,7 +7,7 @@
 
     <form method="GET" class="filter-form">
         <label for="waste_type">Filter by waste type:</label>
-        <select name="waste_type" id="waste_type" onchange="this.form.submit()">
+        <select name="waste_type" id="waste_type" data-auto-submit="true">
             <option value="">All types</option>
             {% for value, label in waste_type_choices %}
                 <option value="{{ value }}" {% if selected_type == value %}selected{% endif %}>{{ label }}</option>

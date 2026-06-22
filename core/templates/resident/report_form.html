@@ -21,7 +21,7 @@
         <div class="form-group">
             <label for="{{ form.location.id_for_label }}">Location</label>
             {{ form.location }}
-            <p id="location-error" class="field-error" style="display:none;">Please enter a location.</p>
+            <p id="location-error" class="field-error hidden">Please enter a location.</p>
             {% if form.location.errors %}
                 <p class="field-error">{{ form.location.errors.0 }}</p>
             {% endif %}
