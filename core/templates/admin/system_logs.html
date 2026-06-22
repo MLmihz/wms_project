@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}System Logs{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="/static/css/admin.css">{% endblock %}
+
+{% block content %}
+<h1>System Logs</h1>
+
+<form method="GET">
+    <label for="actor_type">Actor Type</label>
+    <select id="actor_type" name="actor_type">
+        <option value="" {% if not actor_type %}selected{% endif %}>All</option>
+        <option value="resident" {% if actor_type == 'resident' %}selected{% endif %}>Resident</option>
+        <option value="provider" {% if actor_type == 'provider' %}selected{% endif %}>Provider</option>
+        <option value="admin" {% if actor_type == 'admin' %}selected{% endif %}>Admin</option>
+    </select>
+    <button type="submit">Filter</button>
+</form>
+
+<table class="data-table">
+    <tr>
+        <th>Actor Type</th>
+        <th>Actor ID</th>
+        <th>Action</th>
+        <th>Timestamp</th>
+    </tr>
+    {% for log in logs %}
+    <tr>
+        <td>{{ log.get_actor_type_display }}</td>
+        <td>{{ log.actor_id }}</td>
+        <td>{{ log.action }}</td>
+        <td>{{ log.timestamp|date:'d M Y, H:i' }}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="4">No logs found.</td></tr>
+    {% endfor %}
+</table>
+{% endblock %}

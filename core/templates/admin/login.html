@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block title %}Admin Login{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="/static/css/admin.css">{% endblock %}
+
+{% block content %}
+<div class="auth-form">
+    <h2>Admin Login</h2>
+    <form method="POST">
+        {% csrf_token %}
+        <label for="username">Username</label>
+        <input type="text" name="username" id="username" required>
+
+        <label for="password">Password</label>
+        <input type="password" name="password" id="password" required>
+
+        <button type="submit">Login as Admin</button>
+    </form>
+</div>
+{% endblock %}

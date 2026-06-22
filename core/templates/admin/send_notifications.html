@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}Send Notifications{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="/static/css/admin.css">{% endblock %}
+
+{% block content %}
+<h1>Send System-wide Notification</h1>
+
+<form method="POST">
+    {% csrf_token %}
+    <label for="audience">Audience</label>
+    <select name="audience" id="audience" required>
+        <option value="all">All Users (Residents, Providers, Admins)</option>
+        <option value="residents">Residents Only</option>
+        <option value="providers">Providers Only</option>
+        <option value="admins">Admins Only</option>
+    </select>
+
+    <label for="message">Message</label>
+    <textarea name="message" id="message" rows="5" maxlength="255" required></textarea>
+
+    <button type="submit">Send Notification</button>
+</form>
+{% endblock %}

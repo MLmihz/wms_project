@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Provider Dashboard{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="/static/css/provider.css">{% endblock %}
+
+{% block content %}
+<h1>Provider Dashboard</h1>
+<p>Welcome, {{ provider.company_name }}</p>
+
+<div class="stats-grid">
+	<p><strong>My reports:</strong> {{ my_reports }}</p>
+	<p><strong>Unassigned reports:</strong> {{ unassigned_reports }}</p>
+	<p><strong>My pending reports:</strong> {{ pending_my_reports }}</p>
+	<p><strong>My collected reports:</strong> {{ collected_my_reports }}</p>
+	<p><strong>Schedules created:</strong> {{ schedules_count }}</p>
+	<p><strong>Guides created:</strong> {{ guides_count }}</p>
+</div>
+
+<ul class="dashboard-links">
+	<li><a href="{% url 'view_waste_reports' %}">View incoming waste reports</a></li>
+	<li><a href="{% url 'manage_schedules' %}">Create and update collection schedules</a></li>
+	<li><a href="{% url 'manage_recycling_guides' %}">Create recycling guides</a></li>
+</ul>
+
+{% endblock %}
