@@ -1,0 +1,34 @@
+:root {
+    --primary: #218651;
+    --primary-strong: #155636;
+    --accent: #34b76e;
+}
+
+h1,
+h2,
+h3 {
+    color: #185337;
+}
+
+.stats-grid p {
+    border-left: 4px solid var(--primary);
+}
+
+.data-table th {
+    background: #f1fcf5;
+}
+
+.data-table td form {
+    display: grid;
+    gap: 0.45rem;
+}
+
+.data-table select,
+.data-table input[type="number"] {
+    min-width: 180px;
+    margin-bottom: 0;
+}
+
+button {
+    box-shadow: 0 8px 16px rgba(31, 122, 77, 0.18);
+}

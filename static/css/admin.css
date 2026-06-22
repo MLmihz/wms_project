@@ -1,0 +1,27 @@
+:root {
+    --primary: #1d6f46;
+    --primary-strong: #124a2f;
+    --accent: #2fa866;
+}
+
+h1,
+h2,
+h3 {
+    color: #18462f;
+}
+
+.dashboard-links li a {
+    border-left: 4px solid var(--primary);
+}
+
+.stats-grid p {
+    border-top: 3px solid var(--primary);
+}
+
+.data-table th {
+    background: #effaf2;
+}
+
+button {
+    box-shadow: 0 8px 16px rgba(29, 111, 70, 0.2);
+}

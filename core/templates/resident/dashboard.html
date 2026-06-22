@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+{% block title %}Resident Dashboard{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="/static/css/resident.css">{% endblock %}
+
+{% block content %}
+<h1>Resident Dashboard</h1>
+<p>Welcome, {{ resident.full_name }}</p>
+{% endblock %}

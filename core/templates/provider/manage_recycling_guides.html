@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}Recycling Guides{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="/static/css/provider.css">{% endblock %}
+
+{% block content %}
+<h1>Recycling Guides</h1>
+
+<h2>Create New Guide</h2>
+<form method="POST">
+    {% csrf_token %}
+    <label for="waste_type">Waste Type</label>
+    <select name="waste_type" id="waste_type" required>
+        {% for value, label in waste_type_choices %}
+        <option value="{{ value }}">{{ label }}</option>
+        {% endfor %}
+    </select>
+
+    <label for="title">Title</label>
+    <input type="text" name="title" id="title" required>
+
+    <label for="instructions">Instructions</label>
+    <textarea name="instructions" id="instructions" required></textarea>
+
+    <button type="submit">Create Guide</button>
+</form>
+
+<h2>My Recycling Guides</h2>
+<table class="data-table">
+    <tr>
+        <th>Title</th>
+        <th>Waste Type</th>
+        <th>Instructions</th>
+        <th>Created</th>
+        <th>Action</th>
+    </tr>
+    {% for guide in guides %}
+    <tr>
+        <td>{{ guide.title }}</td>
+        <td>{{ guide.get_waste_type_display }}</td>
+        <td>{{ guide.instructions }}</td>
+        <td>{{ guide.created_at|date:"d M Y" }}</td>
+        <td>
+            <form method="POST" action="{% url 'delete_recycling_guide' guide.id %}">
+                {% csrf_token %}
+                <button type="submit">Delete</button>
+            </form>
+        </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="5">No recycling guides created yet.</td></tr>
+    {% endfor %}
+</table>
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title %}Waste Reports{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="/static/css/provider.css">{% endblock %}
+
+{% block content %}
+<h1>Waste Reports</h1>
+
+<h2>Unassigned Reports</h2>
+<table class="data-table">
+    <tr>
+        <th>Type</th>
+        <th>Location</th>
+        <th>Description</th>
+        <th>Reported</th>
+        <th>Action</th>
+    </tr>
+    {% for report in unassigned_reports %}
+    <tr>
+        <td>{{ report.get_waste_type_display }}</td>
+        <td>{{ report.location }}</td>
+        <td>{{ report.description }}</td>
+        <td>{{ report.date_reported|date:"d M Y, H:i" }}</td>
+        <td>
+            <form method="POST" action="{% url 'claim_report' report.id %}">
+                {% csrf_token %}
+                <button type="submit">Claim</button>
+            </form>
+        </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="5">No unassigned reports right now.</td></tr>
+    {% endfor %}
+</table>
+
+<h2>My Reports</h2>
+<table class="data-table">
+    <tr>
+        <th>Type</th>
+        <th>Location</th>
+        <th>Status</th>
+        <th>Reported</th>
+        <th>Update Status and Points</th>
+    </tr>
+    {% for report in my_reports %}
+    <tr>
+        <td>{{ report.get_waste_type_display }}</td>
+        <td>{{ report.location }}</td>
+        <td>{{ report.get_status_display }}</td>
+        <td>{{ report.date_reported|date:"d M Y, H:i" }}</td>
+        <td>
+            <form method="POST" action="{% url 'update_report_status' report.id %}">
+                {% csrf_token %}
+                <select name="status">
+                    {% for value, label in status_choices %}
+                    <option value="{{ value }}" {% if report.status == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+                <input type="number" name="points_awarded" min="0" value="0" placeholder="Points for resident">
+                <button type="submit">Update</button>
+            </form>
+        </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="5">You have no assigned reports yet.</td></tr>
+    {% endfor %}
+</table>
+{% endblock %}
