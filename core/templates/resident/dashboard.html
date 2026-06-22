@@ -1,8 +1,53 @@
 {% extends 'base.html' %}
-{% block title %}Resident Dashboard{% endblock %}
-{% block extra_css %}<link rel="stylesheet" href="/static/css/resident.css">{% endblock %}
+{% block title %}Dashboard{% endblock %}
 
 {% block content %}
-<h1>Resident Dashboard</h1>
-<p>Welcome, {{ resident.full_name }}</p>
+<div class="dashboard">
+    <h2>Welcome, {{ resident.full_name }}</h2>
+
+    <div class="dashboard-stats">
+        <div class="stat-card">
+            <p class="stat-label">Points Balance</p>
+            <p class="stat-value">{{ resident.points }}</p>
+        </div>
+        <div class="stat-card">
+            <p class="stat-label">Zone</p>
+            <p class="stat-value">{{ resident.zone|default:"Not set" }}</p>
+        </div>
+    </div>
+
+    <div class="dashboard-actions">
+        <a href="{% url 'resident_report_create' %}" class="btn">Report an Issue</a>
+        <a href="{% url 'resident_schedule' %}" class="btn">View Schedule</a>
+        <a href="{% url 'resident_recycling_guide' %}" class="btn">Recycling Guide</a>
+    </div>
+
+    <h3>Recent Reports</h3>
+
+    {% if recent_reports %}
+        <table class="report-table">
+            <thead>
+                <tr>
+                    <th>Waste Type</th>
+                    <th>Location</th>
+                    <th>Status</th>
+                    <th>Date Reported</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for report in recent_reports %}
+                <tr>
+                    <td>{{ report.get_waste_type_display }}</td>
+                    <td>{{ report.location }}</td>
+                    <td><span class="status status-{{ report.status }}">{{ report.get_status_display }}</span></td>
+                    <td>{{ report.date_reported|date:"d M Y, H:i" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <a href="{% url 'resident_report_list' %}">View all reports →</a>
+    {% else %}
+        <p>You haven't submitted any reports yet.</p>
+    {% endif %}
+</div>
 {% endblock %}

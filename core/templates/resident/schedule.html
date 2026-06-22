@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Collection Schedule{% endblock %}
+
+{% block content %}
+<div class="schedule-page">
+    <h2>Collection Schedule</h2>
+    <p>Showing all upcoming waste collection schedules. Your zone: <strong>{{ resident.zone|default:"Not set" }}</strong></p>
+
+    <div class="schedule-filters">
+        <label for="zone-filter">Filter by zone:</label>
+        <select id="zone-filter">
+            <option value="">All zones</option>
+        </select>
+
+        <label for="type-filter">Filter by waste type:</label>
+        <select id="type-filter">
+            <option value="">All types</option>
+        </select>
+    </div>
+
+    {% if schedules %}
+        <table class="report-table" id="schedule-table">
+            <thead>
+                <tr>
+                    <th>Zone</th>
+                    <th>Waste Type</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for schedule in schedules %}
+                <tr data-zone="{{ schedule.zone }}" data-waste-type="{{ schedule.waste_type }}">
+                    <td>{{ schedule.zone }}</td>
+                    <td>{{ schedule.get_waste_type_display }}</td>
+                    <td>{{ schedule.collection_date|date:"d M Y" }}</td>
+                    <td>{{ schedule.collection_time|time:"H:i" }}</td>
+                    <td>{{ schedule.notes|default:"—" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <p id="no-results" style="display:none;">No schedules match your filters.</p>
+    {% else %}
+        <p>No collection schedules have been published yet.</p>
+    {% endif %}
+</div>
+
+<script src="{% static 'js/resident/schedule_filter.js' %}"></script>
+{% endblock %}

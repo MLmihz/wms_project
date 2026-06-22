@@ -1,0 +1,44 @@
+
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{% if editing %}Edit Report{% else %}Report an Issue{% endif %}{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h2>{% if editing %}Edit Report{% else %}Report an Issue{% endif %}</h2>
+
+    <form method="POST" id="report-form" novalidate>
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label for="{{ form.waste_type.id_for_label }}">Waste Type</label>
+            {{ form.waste_type }}
+            {% if form.waste_type.errors %}
+                <p class="field-error">{{ form.waste_type.errors.0 }}</p>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.location.id_for_label }}">Location</label>
+            {{ form.location }}
+            <p id="location-error" class="field-error" style="display:none;">Please enter a location.</p>
+            {% if form.location.errors %}
+                <p class="field-error">{{ form.location.errors.0 }}</p>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.description.id_for_label }}">Description (optional)</label>
+            {{ form.description }}
+            {% if form.description.errors %}
+                <p class="field-error">{{ form.description.errors.0 }}</p>
+            {% endif %}
+        </div>
+
+        <button type="submit" class="btn">{% if editing %}Save Changes{% else %}Submit Report{% endif %}</button>
+        <a href="{% url 'resident_report_list' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+
+<script src="{% static 'js/resident/report_form.js' %}"></script>
+{% endblock %}

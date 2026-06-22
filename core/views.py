@@ -1,9 +1,8 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404
 from django.db.models import Count
 from django.utils import timezone
 from .models import (
@@ -16,6 +15,7 @@ from .models import (
     RecyclingGuide,
     Notification,
 )
+from .forms import WasteReportForm
 
 
 def get_user_role(user):
@@ -42,7 +42,6 @@ def _require_role(request, expected_role):
 
 
 def home_redirect(request):
-    """Send a logged-in user to the right dashboard, or to login if anonymous."""
     if not request.user.is_authenticated:
         return redirect('login')
 
@@ -54,7 +53,6 @@ def home_redirect(request):
     if role == 'admin':
         return redirect('admin_dashboard')
 
-    # Logged in but no matching actor profile — safety fallback
     messages.error(request, "Your account has no assigned role. Contact an administrator.")
     logout(request)
     return redirect('login')
@@ -144,7 +142,128 @@ def resident_dashboard(request):
     role, profile = get_user_role(request.user)
     if role != 'resident':
         return redirect('home')
-    return render(request, 'resident/dashboard.html', {'resident': profile})
+
+    recent_reports = profile.waste_reports.order_by('-date_reported')[:5]
+    return render(request, 'resident/dashboard.html', {
+        'resident': profile,
+        'recent_reports': recent_reports,
+    })
+
+
+@login_required
+def resident_report_list(request):
+    role, profile = get_user_role(request.user)
+    if role != 'resident':
+        return redirect('home')
+
+    reports = profile.waste_reports.order_by('-date_reported')
+    return render(request, 'resident/report_list.html', {
+        'resident': profile,
+        'reports': reports,
+    })
+
+
+@login_required
+def resident_report_create(request):
+    role, profile = get_user_role(request.user)
+    if role != 'resident':
+        return redirect('home')
+
+    if request.method == 'POST':
+        form = WasteReportForm(request.POST)
+        if form.is_valid():
+            report = form.save(commit=False)
+            report.resident = profile
+            report.save()
+            messages.success(request, "Your report has been submitted.")
+            return redirect('resident_report_list')
+    else:
+        form = WasteReportForm()
+
+    return render(request, 'resident/report_form.html', {
+        'form': form,
+        'editing': False,
+    })
+
+
+@login_required
+def resident_report_edit(request, report_id):
+    role, profile = get_user_role(request.user)
+    if role != 'resident':
+        return redirect('home')
+
+    report = get_object_or_404(WasteReport, id=report_id, resident=profile)
+
+    if report.status != 'pending':
+        messages.error(request, "This report can no longer be edited because it is already being processed.")
+        return redirect('resident_report_list')
+
+    if request.method == 'POST':
+        form = WasteReportForm(request.POST, instance=report)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Report updated.")
+            return redirect('resident_report_list')
+    else:
+        form = WasteReportForm(instance=report)
+
+    return render(request, 'resident/report_form.html', {
+        'form': form,
+        'editing': True,
+        'report': report,
+    })
+
+
+@login_required
+def resident_report_delete(request, report_id):
+    role, profile = get_user_role(request.user)
+    if role != 'resident':
+        return redirect('home')
+
+    report = get_object_or_404(WasteReport, id=report_id, resident=profile)
+
+    if report.status != 'pending':
+        messages.error(request, "This report can no longer be deleted because it is already being processed.")
+        return redirect('resident_report_list')
+
+    if request.method == 'POST':
+        report.delete()
+        messages.success(request, "Report deleted.")
+        return redirect('resident_report_list')
+
+    return render(request, 'resident/report_confirm_delete.html', {'report': report})
+
+
+@login_required
+def resident_schedule_view(request):
+    role, profile = get_user_role(request.user)
+    if role != 'resident':
+        return redirect('home')
+
+    schedules = CollectionSchedule.objects.order_by('collection_date', 'collection_time')
+    return render(request, 'resident/schedule.html', {
+        'resident': profile,
+        'schedules': schedules,
+    })
+
+
+@login_required
+def resident_recycling_guide(request):
+    role, profile = get_user_role(request.user)
+    if role != 'resident':
+        return redirect('home')
+
+    guides = RecyclingGuide.objects.order_by('waste_type')
+    waste_type_filter = request.GET.get('waste_type')
+    if waste_type_filter:
+        guides = guides.filter(waste_type=waste_type_filter)
+
+    return render(request, 'resident/recycling_guide.html', {
+        'resident': profile,
+        'guides': guides,
+        'waste_type_choices': WasteReport.WASTE_TYPE_CHOICES,
+        'selected_type': waste_type_filter,
+    })
 
 
 @login_required

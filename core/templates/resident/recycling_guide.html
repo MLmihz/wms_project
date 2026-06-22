@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}Recycling Guide{% endblock %}
+
+{% block content %}
+<div class="recycling-guide-page">
+    <h2>Recycling Guide</h2>
+
+    <form method="GET" class="filter-form">
+        <label for="waste_type">Filter by waste type:</label>
+        <select name="waste_type" id="waste_type" onchange="this.form.submit()">
+            <option value="">All types</option>
+            {% for value, label in waste_type_choices %}
+                <option value="{{ value }}" {% if selected_type == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
+    </form>
+
+    {% if guides %}
+        <div class="guide-list">
+            {% for guide in guides %}
+            <div class="guide-card">
+                <h3>{{ guide.title }}</h3>
+                <p class="guide-type">{{ guide.get_waste_type_display }}</p>
+                <p>{{ guide.instructions }}</p>
+                <p class="guide-meta">Posted by {{ guide.provider.company_name }} on {{ guide.created_at|date:"d M Y" }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No recycling guides available{% if selected_type %} for this waste type{% endif %}.</p>
+    {% endif %}
+</div>
+{% endblock %}
