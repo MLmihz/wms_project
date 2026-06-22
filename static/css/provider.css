@@ -1,34 +1,23 @@
 :root {
-    --primary: #218651;
-    --primary-strong: #155636;
-    --accent: #34b76e;
+    --primary: #2c8f5a;
+    --primary-strong: #1a5d3a;
+    --accent: #48c67f;
 }
 
 h1,
 h2,
 h3 {
-    color: #185337;
+    color: #1d5538;
 }
 
 .stats-grid p {
-    border-left: 4px solid var(--primary);
+    border-right: 4px solid var(--primary);
 }
 
-.data-table th {
-    background: #f1fcf5;
-}
-
-.data-table td form {
-    display: grid;
-    gap: 0.45rem;
-}
-
-.data-table select,
-.data-table input[type="number"] {
-    min-width: 180px;
-    margin-bottom: 0;
+.dashboard-links li a {
+    border-bottom: 3px solid var(--primary);
 }
 
 button {
-    box-shadow: 0 8px 16px rgba(31, 122, 77, 0.18);
+    box-shadow: 0 8px 16px rgba(44, 143, 90, 0.18);
 }
