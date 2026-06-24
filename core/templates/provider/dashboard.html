@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% block title %}Provider Dashboard{% endblock %}
+
+{% block content %}
+<h1>Provider Dashboard</h1>
+<p>Welcome, {{ provider.company_name }}</p>
+
+<div class="stats-grid">
+	<p><strong>My reports:</strong> {{ my_reports }}</p>
+	<p><strong>Unassigned reports:</strong> {{ unassigned_reports }}</p>
+	<p><strong>My pending reports:</strong> {{ pending_my_reports }}</p>
+	<p><strong>My collected reports:</strong> {{ collected_my_reports }}</p>
+	<p><strong>Schedules created:</strong> {{ schedules_count }}</p>
+	<p><strong>Guides created:</strong> {{ guides_count }}</p>
+</div>
+
+<ul class="dashboard-links">
+	<li><a href="{% url 'view_waste_reports' %}">View incoming waste reports</a></li>
+	<li><a href="{% url 'manage_schedules' %}">Create and update collection schedules</a></li>
+	<li><a href="{% url 'manage_recycling_guides' %}">Create recycling guides</a></li>
+</ul>
+
+<h2>Collection Status By Zone</h2>
+{% if zone_status %}
+<table class="data-table">
+	<tr>
+		<th>Zone</th>
+		<th>Latest Collection Slot</th>
+		<th>Status</th>
+	</tr>
+	{% for row in zone_status %}
+	<tr>
+		<td>{{ row.zone }}</td>
+		<td>{{ row.scheduled_at|date:"d M Y, H:i" }}</td>
+		<td>
+			{% if row.is_done %}
+				<span class="status status-collected">Done</span>
+			{% else %}
+				<span class="status status-pending">Pending</span>
+			{% endif %}
+		</td>
+	</tr>
+	{% endfor %}
+</table>
+{% else %}
+<p>No schedules found yet. Add schedules to track per-zone collection status.</p>
+{% endif %}
+
+<h2>Award Collection Points</h2>
+<p>Assign points based on collected recycled products, not waste report submissions.</p>
+
+<form method="POST" action="{% url 'assign_collection_points' %}">
+	{% csrf_token %}
+
+	<label for="resident_id">Resident</label>
+	<select name="resident_id" id="resident_id" required>
+		<option value="">Select resident</option>
+		{% for resident in residents_for_points %}
+			<option value="{{ resident.id }}">{{ resident.full_name }}{% if resident.zone %} ({{ resident.zone }}){% endif %}</option>
+		{% endfor %}
+	</select>
+
+	<label for="waste_type">Recycled Product Type</label>
+	<select name="waste_type" id="waste_type">
+		<option value="">Select type</option>
+		{% for value, label in waste_type_choices %}
+			<option value="{{ value }}">{{ label }}</option>
+		{% endfor %}
+	</select>
+
+	<label for="quantity_kg">Quantity Collected (kg)</label>
+	<input type="number" id="quantity_kg" name="quantity_kg" min="0" step="0.1" placeholder="e.g. 4.5">
+
+	<label for="points">Points to Award</label>
+	<input type="number" id="points" name="points" min="1" required>
+
+	<button type="submit">Assign Collection Points</button>
+</form>
+
+{% endblock %}

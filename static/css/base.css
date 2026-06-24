@@ -51,9 +51,21 @@ body {
 
 /* ---------- Layout ---------- */
 .content {
-    max-width: 960px;
+    max-width: 1040px;
     margin: 32px auto;
-    padding: 0 20px;
+    padding: 0 20px 24px;
+}
+
+h1,
+h2,
+h3 {
+    color: #1d5538;
+    margin-top: 18px;
+    margin-bottom: 10px;
+}
+
+p {
+    margin-bottom: 8px;
 }
 
 /* ---------- Messages ---------- */
@@ -77,6 +89,13 @@ body {
     border: 1px solid #86efac;
 }
 
+.message.warning,
+.alert-warning {
+    background-color: #fef3c7;
+    color: #92400e;
+    border: 1px solid #fcd34d;
+}
+
 .message.error,
 .alert-error {
     background-color: #fee2e2;
@@ -85,7 +104,8 @@ body {
 }
 
 /* ---------- Buttons ---------- */
-.btn {
+.btn,
+button {
     display: inline-block;
     background-color: #1b5e20;
     color: white;
@@ -95,9 +115,11 @@ body {
     font-size: 14px;
     border: none;
     cursor: pointer;
+    font-family: inherit;
 }
 
-.btn:hover {
+.btn:hover,
+button:hover {
     background-color: #14441a;
 }
 
@@ -124,12 +146,17 @@ body {
 
 /* ---------- Forms ---------- */
 .auth-form,
-.form-container {
+.form-container,
+form {
     background: white;
-    padding: 28px;
+    padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-    max-width: 480px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.auth-form,
+.form-container {
+    max-width: 560px;
 }
 
 .auth-form h2,
@@ -138,7 +165,8 @@ body {
 }
 
 .auth-form label,
-.form-group label {
+.form-group label,
+form label {
     display: block;
     font-size: 14px;
     font-weight: 600;
@@ -147,12 +175,25 @@ body {
 }
 
 .auth-form input,
-.form-control {
+.form-control,
+form input[type="text"],
+form input[type="password"],
+form input[type="number"],
+form input[type="date"],
+form input[type="time"],
+form select,
+form textarea {
     width: 100%;
     padding: 9px 10px;
     border: 1px solid #d1d5db;
     border-radius: 6px;
     font-size: 14px;
+    font-family: inherit;
+}
+
+form textarea {
+    min-height: 110px;
+    resize: vertical;
 }
 
 .form-group {
@@ -165,25 +206,40 @@ body {
     margin-top: 4px;
 }
 
+.hidden {
+    display: none;
+}
+
+.inline-form {
+    display: inline;
+}
+
 .auth-form button,
 .form-container button[type="submit"] {
     margin-top: 20px;
     margin-right: 8px;
 }
 
-/* ---------- Dashboard ---------- */
-.dashboard-stats {
-    display: flex;
+/* ---------- Dashboard cards ---------- */
+.dashboard-stats,
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 16px;
     margin: 20px 0;
 }
 
-.stat-card {
+.stat-card,
+.stats-grid p {
     background: white;
     border-radius: 8px;
     padding: 16px 20px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-    flex: 1;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    border-right: 4px solid #2c8f5a;
+}
+
+.stats-grid p {
+    margin: 0;
 }
 
 .stat-label {
@@ -201,30 +257,68 @@ body {
     display: flex;
     gap: 10px;
     margin: 20px 0;
+    flex-wrap: wrap;
+}
+
+.dashboard-links {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 12px;
+    list-style: none;
+    padding: 0;
+    margin: 14px 0 18px;
+}
+
+.dashboard-links li a {
+    display: block;
+    background: #1b5e20;
+    border: 1px solid #1b5e20;
+    border-radius: 8px;
+    padding: 12px 14px;
+    text-decoration: none;
+    color: white;
+}
+
+.dashboard-links li a:hover {
+    background: #14441a;
 }
 
 /* ---------- Tables ---------- */
-.report-table {
+.report-table,
+.data-table {
     width: 100%;
     border-collapse: collapse;
     background: white;
     border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
     margin-top: 12px;
+    margin-bottom: 16px;
 }
 
 .report-table th,
-.report-table td {
+.report-table td,
+.data-table th,
+.data-table td {
     padding: 10px 14px;
     text-align: left;
     font-size: 14px;
     border-bottom: 1px solid #e5e7eb;
+    vertical-align: top;
 }
 
-.report-table th {
+.report-table th,
+.data-table th {
     background-color: #f3f4f6;
     font-weight: 600;
+}
+
+.data-table form {
+    background: transparent;
+    box-shadow: none;
+    border-radius: 0;
+    padding: 0;
+    margin: 0;
 }
 
 .status {
@@ -250,6 +344,8 @@ body {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 12px;
+    gap: 12px;
+    flex-wrap: wrap;
 }
 
 /* ---------- Schedule filters ---------- */
@@ -261,7 +357,8 @@ body {
     background: white;
     padding: 14px;
     border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    flex-wrap: wrap;
 }
 
 .schedule-filters label {
@@ -270,9 +367,8 @@ body {
 }
 
 .schedule-filters select {
-    padding: 6px 10px;
-    border-radius: 6px;
-    border: 1px solid #d1d5db;
+    width: auto;
+    min-width: 180px;
 }
 
 /* ---------- Recycling guide ---------- */
@@ -281,9 +377,8 @@ body {
 }
 
 .filter-form select {
-    padding: 6px 10px;
-    border-radius: 6px;
-    border: 1px solid #d1d5db;
+    width: auto;
+    min-width: 220px;
 }
 
 .guide-list {
@@ -296,7 +391,7 @@ body {
     background: white;
     padding: 18px;
     border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 .guide-card h3 {
@@ -317,7 +412,7 @@ body {
     margin-top: 10px;
 }
 
-/* ---------- Report summary (delete confirm page) ---------- */
+/* ---------- Report summary ---------- */
 .report-summary {
     background: #f9fafb;
     padding: 14px;
@@ -328,4 +423,23 @@ body {
 .report-summary p {
     margin-bottom: 6px;
     font-size: 14px;
+}
+
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .content {
+        padding: 0 14px 16px;
+    }
+
+    .report-table,
+    .data-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
 }

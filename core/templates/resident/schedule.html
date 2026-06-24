@@ -42,11 +42,11 @@
                 {% endfor %}
             </tbody>
         </table>
-        <p id="no-results" style="display:none;">No schedules match your filters.</p>
+        <p id="no-results" class="hidden">No schedules match your filters.</p>
     {% else %}
         <p>No collection schedules have been published yet.</p>
     {% endif %}
 </div>
 
-<script src="{% static 'resident/js/schedule_filter.js' %}"></script>
+<script src="{% static 'js/resident/schedule_filter.js' %}"></script>
 {% endblock %}

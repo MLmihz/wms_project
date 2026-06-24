@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block title %}Collection Schedules{% endblock %}
+
+{% block content %}
+<h1>Collection Schedules</h1>
+
+<h2>{% if edit_schedule %}Update Schedule{% else %}Create New Schedule{% endif %}</h2>
+<form method="POST">
+    {% csrf_token %}
+    {% if edit_schedule %}
+    <input type="hidden" name="schedule_id" value="{{ edit_schedule.id }}">
+    {% endif %}
+
+    <label for="zone">Zone</label>
+    <input type="text" name="zone" id="zone" value="{{ edit_schedule.zone|default:'' }}" required>
+
+    <label for="waste_type">Waste Type</label>
+    <select name="waste_type" id="waste_type" required>
+        {% for value, label in waste_type_choices %}
+        <option value="{{ value }}" {% if edit_schedule and edit_schedule.waste_type == value %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+    </select>
+
+    <label for="collection_date">Collection Date</label>
+    <input type="date" name="collection_date" id="collection_date" value="{{ edit_schedule.collection_date|date:'Y-m-d' }}" required>
+
+    <label for="collection_time">Collection Time</label>
+    <input type="time" name="collection_time" id="collection_time" value="{{ edit_schedule.collection_time|time:'H:i' }}" required>
+
+    <label for="notes">Notes</label>
+    <textarea name="notes" id="notes">{{ edit_schedule.notes|default:'' }}</textarea>
+
+    <button type="submit">{% if edit_schedule %}Update Schedule{% else %}Create Schedule{% endif %}</button>
+    {% if edit_schedule %}
+    <a href="{% url 'manage_schedules' %}">Cancel Edit</a>
+    {% endif %}
+</form>
+
+<h2>My Schedules</h2>
+<table class="data-table">
+    <tr>
+        <th>Zone</th>
+        <th>Waste Type</th>
+        <th>Date</th>
+        <th>Time</th>
+        <th>Notes</th>
+        <th>Actions</th>
+    </tr>
+    {% for schedule in schedules %}
+    <tr>
+        <td>{{ schedule.zone }}</td>
+        <td>{{ schedule.get_waste_type_display }}</td>
+        <td>{{ schedule.collection_date }}</td>
+        <td>{{ schedule.collection_time }}</td>
+        <td>{{ schedule.notes }}</td>
+        <td>
+            <a href="{% url 'manage_schedules' %}?edit={{ schedule.id }}">Edit</a>
+            <form method="POST" action="{% url 'delete_schedule' schedule.id %}" class="inline-form">
+                {% csrf_token %}
+                <button type="submit">Delete</button>
+            </form>
+        </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="6">No schedules created yet.</td></tr>
+    {% endfor %}
+</table>
+{% endblock %}

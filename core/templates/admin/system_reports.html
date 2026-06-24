@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block title %}System Reports{% endblock %}
+
+{% block content %}
+<h1>System Reports</h1>
+
+<form method="GET">
+    <label for="days">Report Window (days)</label>
+    <input id="days" name="days" type="number" min="1" value="{{ days }}">
+    <button type="submit">Generate</button>
+</form>
+
+<p>Showing report summary since {{ since|date:'d M Y, H:i' }}.</p>
+
+<div class="stats-grid">
+    <p><strong>Total reports:</strong> {{ total_reports }}</p>
+    <p><strong>Pending:</strong> {{ pending_reports }}</p>
+    <p><strong>In progress:</strong> {{ in_progress_reports }}</p>
+    <p><strong>Collected:</strong> {{ collected_reports }}</p>
+    <p><strong>Rejected:</strong> {{ rejected_reports }}</p>
+    <p><strong>New residents:</strong> {{ new_residents }}</p>
+    <p><strong>New providers:</strong> {{ new_providers }}</p>
+</div>
+
+<h2>Status Breakdown</h2>
+<table class="data-table">
+    <tr>
+        <th>Status</th>
+        <th>Total</th>
+    </tr>
+    {% for item in status_breakdown %}
+    <tr>
+        <td>{{ item.status }}</td>
+        <td>{{ item.total }}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="2">No data.</td></tr>
+    {% endfor %}
+</table>
+
+<h2>Waste Type Breakdown</h2>
+<table class="data-table">
+    <tr>
+        <th>Waste Type</th>
+        <th>Total</th>
+    </tr>
+    {% for item in waste_type_breakdown %}
+    <tr>
+        <td>{{ item.waste_type }}</td>
+        <td>{{ item.total }}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="2">No data.</td></tr>
+    {% endfor %}
+</table>
+{% endblock %}

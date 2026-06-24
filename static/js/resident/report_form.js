@@ -9,10 +9,10 @@ document.addEventListener('DOMContentLoaded', function () {
         let isValid = true;
 
         if (locationInput.value.trim() === '') {
-            locationError.style.display = 'block';
+            locationError.classList.remove('hidden');
             isValid = false;
         } else {
-            locationError.style.display = 'none';
+            locationError.classList.add('hidden');
         }
 
         if (!isValid) {
@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     locationInput.addEventListener('input', function () {
         if (locationInput.value.trim() !== '') {
-            locationError.style.display = 'none';
+            locationError.classList.add('hidden');
         }
     });
 });
