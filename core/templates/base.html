@@ -10,13 +10,30 @@
 </head>
 <body>
     <nav class="navbar">
-        <div class="navbar-brand">WMS</div>
+        <div class="navbar-brand">Waste Collection and Recycling Management System</div>
+
         <div class="navbar-links">
             {% if user.is_authenticated %}
+
+                {% if user.resident %}
+                    <a href="{% url 'resident_dashboard' %}" class="nav-link">Dashboard</a>
+                    <a href="{% url 'resident_report_create' %}" class="nav-link">Report Issue</a>
+                    <a href="{% url 'resident_schedule' %}" class="nav-link">Schedule</a>
+                    <a href="{% url 'resident_recycling_guide' %}" class="nav-link">Recycling Guide</a>
+                {% endif %}
+                 {% if user.waste_service_provider %}
+                 <a href="{% url 'provider_dashboard' %}" class="nav-link">Dashboard</a>
+                 <a href="{% url 'view_waste_reports' %}" class="nav-link">View Incoming Waste Reports</a>
+                 <a href="{% url 'manage_schedules' %}" class="nav-link">Create and Update Collection Schedules</a>
+                 <a href="{% url 'manage_recycling_guides' %}" class="nav-link">Create Recycling Guides</a>
+                {% endif %}
+
+          
                 <span class="navbar-user">{{ user.username }}</span>
-                <a href="{% url 'logout' %}">Logout</a>
+                <a href="{% url 'logout' %}" class="nav-link">Logout</a>
+
             {% else %}
-                <a href="{% url 'login' %}">Login</a>
+                <a href="{% url 'login' %}" class="nav-link">Login</a>
             {% endif %}
         </div>
     </nav>
