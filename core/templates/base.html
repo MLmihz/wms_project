@@ -10,7 +10,9 @@
 </head>
 <body>
     <nav class="navbar">
-        <div class="navbar-brand">Waste Collection and Recycling Management System</div>
+        <div class="navbar-top">
+            <div class="navbar-brand">Waste Collection and Recycling Management System<span class="recycle-icon" aria-hidden="true">&#9851;</span></div>
+        </div>
 
         <div class="navbar-links">
             {% if user.is_authenticated %}
@@ -36,12 +38,15 @@
                     <a href="{% url 'send_system_notification' %}" class="nav-link">Send Notification</a>
                 {% endif %}
 
-          
-                <span class="navbar-user">{{ user.username }}</span>
-                <a href="{% url 'logout' %}" class="nav-link">Logout</a>
+                <div class="navbar-account-links">
+                    <span class="navbar-user">{{ user.username }}</span>
+                    <a href="{% url 'logout' %}" class="nav-link">Logout</a>
+                </div>
 
             {% else %}
-                <a href="{% url 'login' %}" class="nav-link">Login</a>
+                {% if request.resolver_match.url_name != 'login' and request.resolver_match.url_name != 'register_resident' and request.resolver_match.url_name != 'register_provider' %}
+                    <a href="{% url 'login' %}" class="nav-link">Login</a>
+                {% endif %}
             {% endif %}
         </div>
     </nav>
