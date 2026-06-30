@@ -2,47 +2,87 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
-<div class="dashboard">
-    <h1>Resident Dashboard</h1>
-    <p>Welcome, {{ resident.full_name }}</p>
-
-    <div class="dashboard-stats">
-        <div class="stat-card">
-            <p class="stat-label">Points Balance</p>
-            <p class="stat-value">{{ resident.points }}</p>
-        </div>
-        <div class="stat-card">
-            <p class="stat-label">Zone</p>
-            <p class="stat-value">{{ resident.zone|default:"Not set" }}</p>
+<div class="dash-shell">
+    <div class="dash-header">
+        <div>
+            <h1 class="dash-title">Resident Dashboard</h1>
+            <p class="dash-subtitle">Welcome, {{ resident.full_name }}</p>
         </div>
     </div>
 
-    <h3>Recent Reports</h3>
+    <div class="dash-stats">
+        <article class="dash-stat-card">
+            <div class="dash-stat-top">
+                <p class="dash-stat-label">Points Balance</p>
+                <i class="fa-solid fa-award dash-stat-icon" aria-hidden="true"></i>
+            </div>
+            <p class="dash-stat-value">{{ resident.points }}</p>
+        </article>
+        <article class="dash-stat-card">
+            <div class="dash-stat-top">
+                <p class="dash-stat-label">Zone</p>
+                <i class="fa-solid fa-location-dot dash-stat-icon" aria-hidden="true"></i>
+            </div>
+            <p class="dash-stat-value">{{ resident.zone|default:"Not set" }}</p>
+        </article>
+    </div>
 
-    {% if recent_reports %}
-        <table class="report-table">
-            <thead>
-                <tr>
-                    <th>Waste Type</th>
-                    <th>Location</th>
-                    <th>Status</th>
-                    <th>Date Reported</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for report in recent_reports %}
-                <tr>
-                    <td>{{ report.get_waste_type_display }}</td>
-                    <td>{{ report.location }}</td>
-                    <td><span class="status status-{{ report.status }}">{{ report.get_status_display }}</span></td>
-                    <td>{{ report.date_reported|date:"d M Y, H:i" }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        <a href="{% url 'resident_report_list' %}">View all reports →</a>
-    {% else %}
-        <p>You haven't submitted any reports yet.</p>
-    {% endif %}
+    <section class="dash-card">
+        <div class="dash-card-head">
+            <h2><i class="fa-solid fa-list-check" aria-hidden="true"></i> Recent Reports</h2>
+            <a href="{% url 'resident_report_list' %}" class="dash-quick-link">View all reports</a>
+        </div>
+
+        {% if recent_reports %}
+            <div class="table-scroll">
+                <table class="report-table">
+                    <thead>
+                        <tr>
+                            <th>Waste Type</th>
+                            <th>Location</th>
+                            <th>Status</th>
+                            <th>Date Reported</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for report in recent_reports %}
+                        <tr>
+                            <td>{{ report.get_waste_type_display }}</td>
+                            <td>{{ report.location }}</td>
+                            <td><span class="status status-{{ report.status }}">{{ report.get_status_display }}</span></td>
+                            <td>{{ report.date_reported|date:"d M Y, H:i" }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="dash-empty-state" role="status" aria-live="polite">
+                <i class="fa-regular fa-face-smile dash-empty-icon" aria-hidden="true"></i>
+                <p class="dash-empty-text">You haven't submitted any reports yet.</p>
+                <a href="{% url 'resident_report_create' %}" class="btn">Create first report</a>
+            </div>
+        {% endif %}
+    </section>
+
+    <section class="dash-card">
+        <div class="dash-card-head">
+            <h2><i class="fa-solid fa-bolt" aria-hidden="true"></i> Quick Actions</h2>
+        </div>
+        <div class="dash-actions-grid">
+            <a href="{% url 'resident_report_create' %}" class="dash-action-card">
+                <p class="dash-action-title"><i class="fa-solid fa-circle-plus" aria-hidden="true"></i> Report an issue</p>
+                <p class="dash-action-copy">Submit a new waste report in seconds.</p>
+            </a>
+            <a href="{% url 'resident_schedule' %}" class="dash-action-card">
+                <p class="dash-action-title"><i class="fa-solid fa-calendar-days" aria-hidden="true"></i> Check schedule</p>
+                <p class="dash-action-copy">See collection dates for your zone.</p>
+            </a>
+            <a href="{% url 'resident_recycling_guide' %}" class="dash-action-card">
+                <p class="dash-action-title"><i class="fa-solid fa-recycle" aria-hidden="true"></i> Recycling guide</p>
+                <p class="dash-action-copy">Find best practices for sorting waste.</p>
+            </a>
+        </div>
+    </section>
 </div>
 {% endblock %}

@@ -2,73 +2,147 @@
 {% block title %}Provider Dashboard{% endblock %}
 
 {% block content %}
-<h1>Provider Dashboard</h1>
-<p>Welcome, {{ provider.company_name }}</p>
+<div class="dash-shell">
+    <div class="dash-header">
+        <div>
+            <h1 class="dash-title">Provider Dashboard</h1>
+            <p class="dash-subtitle">Welcome, {{ provider.company_name }}</p>
+        </div>
+    </div>
 
-<div class="stats-grid">
-    <p><strong>My reports:</strong> {{ my_reports }}</p>
-    <p><strong>Unassigned reports:</strong> {{ unassigned_reports }}</p>
-    <p><strong>My pending reports:</strong> {{ pending_my_reports }}</p>
-    <p><strong>My collected reports:</strong> {{ collected_my_reports }}</p>
-    <p><strong>Schedules created:</strong> {{ schedules_count }}</p>
-    <p><strong>Guides created:</strong> {{ guides_count }}</p>
-</div>
+    <div class="dash-stats">
+        <article class="dash-stat-card">
+            <div class="dash-stat-top">
+                <p class="dash-stat-label">My Reports</p>
+                <i class="fa-solid fa-file-circle-check dash-stat-icon" aria-hidden="true"></i>
+            </div>
+            <p class="dash-stat-value">{{ my_reports }}</p>
+        </article>
+        <article class="dash-stat-card">
+            <div class="dash-stat-top">
+                <p class="dash-stat-label">Unassigned Reports</p>
+                <i class="fa-solid fa-inbox dash-stat-icon" aria-hidden="true"></i>
+            </div>
+            <p class="dash-stat-value">{{ unassigned_reports }}</p>
+        </article>
+        <article class="dash-stat-card">
+            <div class="dash-stat-top">
+                <p class="dash-stat-label">Pending Reports</p>
+                <i class="fa-solid fa-hourglass-half dash-stat-icon" aria-hidden="true"></i>
+            </div>
+            <p class="dash-stat-value">{{ pending_my_reports }}</p>
+        </article>
+        <article class="dash-stat-card">
+            <div class="dash-stat-top">
+                <p class="dash-stat-label">Collected Reports</p>
+                <i class="fa-solid fa-truck-fast dash-stat-icon" aria-hidden="true"></i>
+            </div>
+            <p class="dash-stat-value">{{ collected_my_reports }}</p>
+        </article>
+        <article class="dash-stat-card">
+            <div class="dash-stat-top">
+                <p class="dash-stat-label">Schedules Created</p>
+                <i class="fa-solid fa-calendar-days dash-stat-icon" aria-hidden="true"></i>
+            </div>
+            <p class="dash-stat-value">{{ schedules_count }}</p>
+        </article>
+        <article class="dash-stat-card">
+            <div class="dash-stat-top">
+                <p class="dash-stat-label">Guides Created</p>
+                <i class="fa-solid fa-recycle dash-stat-icon" aria-hidden="true"></i>
+            </div>
+            <p class="dash-stat-value">{{ guides_count }}</p>
+        </article>
+    </div>
 
-<h2>Collection Status By Zone</h2>
-{% if zone_status %}
-<table class="data-table">
-    <tr>
-        <th>Zone</th>
-        <th>Latest Collection Slot</th>
-        <th>Status</th>
-    </tr>
-    {% for row in zone_status %}
-    <tr>
-        <td>{{ row.zone }}</td>
-        <td>{{ row.scheduled_at|date:"d M Y, H:i" }}</td>
-        <td>
-            {% if row.is_done %}
-                <span class="status status-collected">Done</span>
+    <div class="dash-grid">
+        <section class="dash-card">
+            <div class="dash-card-head">
+                <h2><i class="fa-solid fa-map-location-dot" aria-hidden="true"></i> Collection Status By Zone</h2>
+            </div>
+
+            {% if zone_status %}
+            <div class="table-scroll">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Zone</th>
+                            <th>Latest Collection Slot</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in zone_status %}
+                        <tr>
+                            <td>{{ row.zone }}</td>
+                            <td>{{ row.scheduled_at|date:"d M Y, H:i" }}</td>
+                            <td>
+                                {% if row.is_done %}
+                                    <span class="status status-collected">Done</span>
+                                {% else %}
+                                    <span class="status status-pending">Pending</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
             {% else %}
-                <span class="status status-pending">Pending</span>
+            <div class="dash-empty-state" role="status" aria-live="polite">
+                <i class="fa-regular fa-calendar-xmark dash-empty-icon" aria-hidden="true"></i>
+                <p class="dash-empty-text">No schedules found yet. Add schedules to track per-zone collection status.</p>
+                <a href="{% url 'manage_schedules' %}" class="btn">Create schedule</a>
+            </div>
             {% endif %}
-        </td>
-    </tr>
-    {% endfor %}
-</table>
-{% else %}
-<p>No schedules found yet. Add schedules to track per-zone collection status.</p>
-{% endif %}
+        </section>
 
-<h2>Award Collection Points</h2>
-<p>Assign points based on collected recycled products, not waste report submissions.</p>
+        <section class="dash-card">
+            <div class="dash-card-head">
+                <h2><i class="fa-solid fa-gift" aria-hidden="true"></i> Award Collection Points</h2>
+            </div>
+            <p class="dash-empty">Assign points based on collected recycled products, not waste report submissions.</p>
 
-<form method="POST" action="{% url 'assign_collection_points' %}">
-    {% csrf_token %}
+            <form method="POST" action="{% url 'assign_collection_points' %}" class="dash-form">
+                {% csrf_token %}
 
-    <label for="resident_id">Resident</label>
-    <select name="resident_id" id="resident_id" required>
-        <option value="">Select resident</option>
-        {% for resident in residents_for_points %}
-            <option value="{{ resident.id }}">{{ resident.full_name }}{% if resident.zone %} ({{ resident.zone }}){% endif %}</option>
-        {% endfor %}
-    </select>
+                <label for="resident_id">Resident</label>
+                <select name="resident_id" id="resident_id" required>
+                    <option value="">Select resident</option>
+                    {% for resident in residents_for_points %}
+                        <option value="{{ resident.id }}">{{ resident.full_name }}{% if resident.zone %} ({{ resident.zone }}){% endif %}</option>
+                    {% endfor %}
+                </select>
 
-    <label for="waste_type">Recycled Product Type</label>
-    <select name="waste_type" id="waste_type">
-        <option value="">Select type</option>
-        {% for value, label in waste_type_choices %}
-            <option value="{{ value }}">{{ label }}</option>
-        {% endfor %}
-    </select>
+                <label for="waste_type">Recycled Product Type</label>
+                <select name="waste_type" id="waste_type">
+                    <option value="">Select type</option>
+                    {% for value, label in waste_type_choices %}
+                        <option value="{{ value }}">{{ label }}</option>
+                    {% endfor %}
+                </select>
 
-    <label for="quantity_kg">Quantity Collected (kg)</label>
-    <input type="number" id="quantity_kg" name="quantity_kg" min="0" step="0.1" placeholder="e.g. 4.5">
+                <label for="quantity_kg">Quantity Collected (kg)</label>
+                <input type="number" id="quantity_kg" name="quantity_kg" min="0" step="0.1" placeholder="e.g. 4.5">
 
-    <label for="points">Points to Award</label>
-    <input type="number" id="points" name="points" min="1" required>
+                <label for="points">Points to Award</label>
+                <input type="number" id="points" name="points" min="1" required>
 
-    <button type="submit">Assign Collection Points</button>
-</form>
+                <button type="submit">Assign Collection Points</button>
+            </form>
+
+            <div class="dash-actions-grid" style="margin-top: 14px;">
+                <a href="{% url 'view_waste_reports' %}" class="dash-action-card">
+                    <p class="dash-action-title"><i class="fa-solid fa-clipboard-list" aria-hidden="true"></i> Open reports</p>
+                    <p class="dash-action-copy">Claim and manage incoming resident reports.</p>
+                </a>
+                <a href="{% url 'manage_recycling_guides' %}" class="dash-action-card">
+                    <p class="dash-action-title"><i class="fa-solid fa-seedling" aria-hidden="true"></i> Update guides</p>
+                    <p class="dash-action-copy">Publish recycling guidance for your zones.</p>
+                </a>
+            </div>
+        </section>
+    </div>
+</div>
 
 {% endblock %}

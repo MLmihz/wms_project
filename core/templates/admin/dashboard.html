@@ -2,36 +2,106 @@
 {% block title %}Admin Dashboard{% endblock %}
 
 {% block content %}
-<h1>Admin Dashboard</h1>
-<p>Welcome, {{ admin.full_name }}</p>
+<div class="dash-shell">
+    <div class="dash-header">
+        <div>
+            <h1 class="dash-title">Admin Dashboard</h1>
+            <p class="dash-subtitle">Welcome, {{ admin.full_name }}</p>
+        </div>
+    </div>
 
-<div class="stats-grid">
-    <p><strong>Residents:</strong> {{ active_residents }} / {{ total_residents }} active</p>
-    <p><strong>Providers:</strong> {{ active_providers }} / {{ total_providers }} active</p>
-    <p><strong>Pending reports:</strong> {{ pending_reports }}</p>
-    <p><strong>In progress reports:</strong> {{ in_progress_reports }}</p>
-    <p><strong>Collected reports:</strong> {{ collected_reports }}</p>
+    <div class="dash-stats">
+        <article class="dash-stat-card">
+            <div class="dash-stat-top">
+                <p class="dash-stat-label">Active Residents</p>
+                <i class="fa-solid fa-users dash-stat-icon" aria-hidden="true"></i>
+            </div>
+            <p class="dash-stat-value">{{ active_residents }}/{{ total_residents }}</p>
+        </article>
+        <article class="dash-stat-card">
+            <div class="dash-stat-top">
+                <p class="dash-stat-label">Active Providers</p>
+                <i class="fa-solid fa-truck dash-stat-icon" aria-hidden="true"></i>
+            </div>
+            <p class="dash-stat-value">{{ active_providers }}/{{ total_providers }}</p>
+        </article>
+        <article class="dash-stat-card">
+            <div class="dash-stat-top">
+                <p class="dash-stat-label">Pending Reports</p>
+                <i class="fa-solid fa-hourglass-half dash-stat-icon" aria-hidden="true"></i>
+            </div>
+            <p class="dash-stat-value">{{ pending_reports }}</p>
+        </article>
+        <article class="dash-stat-card">
+            <div class="dash-stat-top">
+                <p class="dash-stat-label">In Progress Reports</p>
+                <i class="fa-solid fa-gears dash-stat-icon" aria-hidden="true"></i>
+            </div>
+            <p class="dash-stat-value">{{ in_progress_reports }}</p>
+        </article>
+        <article class="dash-stat-card">
+            <div class="dash-stat-top">
+                <p class="dash-stat-label">Collected Reports</p>
+                <i class="fa-solid fa-check-double dash-stat-icon" aria-hidden="true"></i>
+            </div>
+            <p class="dash-stat-value">{{ collected_reports }}</p>
+        </article>
+    </div>
+
+    <section class="dash-card">
+        <div class="dash-card-head">
+            <h2><i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i> Recent System Activity</h2>
+        </div>
+        {% if recent_logs %}
+            <div class="table-scroll">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Actor Type</th>
+                            <th>Actor ID</th>
+                            <th>Action</th>
+                            <th>Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in recent_logs %}
+                        <tr>
+                            <td>{{ log.get_actor_type_display }}</td>
+                            <td>{{ log.actor_id }}</td>
+                            <td>{{ log.action }}</td>
+                            <td>{{ log.timestamp|date:"d M Y, H:i" }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="dash-empty-state" role="status" aria-live="polite">
+                <i class="fa-regular fa-folder-open dash-empty-icon" aria-hidden="true"></i>
+                <p class="dash-empty-text">No logs yet.</p>
+                <a href="{% url 'view_system_logs' %}" class="btn">Open logs page</a>
+            </div>
+        {% endif %}
+    </section>
+
+    <section class="dash-card">
+        <div class="dash-card-head">
+            <h2><i class="fa-solid fa-bolt" aria-hidden="true"></i> Quick Actions</h2>
+        </div>
+        <div class="dash-actions-grid">
+            <a href="{% url 'manage_accounts' %}" class="dash-action-card">
+                <p class="dash-action-title"><i class="fa-solid fa-users-gear" aria-hidden="true"></i> Manage accounts</p>
+                <p class="dash-action-copy">Activate, deactivate, and review user roles.</p>
+            </a>
+            <a href="{% url 'send_system_notification' %}" class="dash-action-card">
+                <p class="dash-action-title"><i class="fa-solid fa-bullhorn" aria-hidden="true"></i> Send notice</p>
+                <p class="dash-action-copy">Broadcast a message to residents and providers.</p>
+            </a>
+            <a href="{% url 'generate_system_reports' %}" class="dash-action-card">
+                <p class="dash-action-title"><i class="fa-solid fa-chart-column" aria-hidden="true"></i> System reports</p>
+                <p class="dash-action-copy">Review current operational performance quickly.</p>
+            </a>
+        </div>
+    </section>
 </div>
-
-<h2>Recent System Activity</h2>
-<table class="data-table">
-    <tr>
-        <th>Actor Type</th>
-        <th>Actor ID</th>
-        <th>Action</th>
-        <th>Time</th>
-    </tr>
-    {% for log in recent_logs %}
-    <tr>
-        <td>{{ log.get_actor_type_display }}</td>
-        <td>{{ log.actor_id }}</td>
-        <td>{{ log.action }}</td>
-        <td>{{ log.timestamp|date:"d M Y, H:i" }}</td>
-    </tr>
-    {% empty %}
-    <tr>
-        <td colspan="4">No logs yet.</td>
-    </tr>
-    {% endfor %}
-</table>
 {% endblock %}

@@ -6,7 +6,7 @@
 }
 
 body {
-    font-family: 'Segoe UI', Arial, sans-serif;
+    font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
     background-color: #f4f6f5;
     color: #1f2937;
     line-height: 1.5;
@@ -27,6 +27,19 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    position: relative;
+}
+
+.navbar-toggle {
+    display: none;
+    position: absolute;
+    right: 0;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+    width: 38px;
+    height: 38px;
+    padding: 0;
 }
 
 .navbar-brand {
@@ -68,7 +81,7 @@ body {
     border-radius: 999px;
     padding: 6px 12px;
     line-height: 1.2;
-    transition: background-color 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+    transition: background-color 0.2s ease, transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .navbar-links a:hover {
@@ -81,6 +94,12 @@ body {
 .navbar-links a:focus-visible {
     outline: 2px solid #d1fae5;
     outline-offset: 2px;
+}
+
+.nav-link.is-active {
+    background: rgba(255, 255, 255, 0.28);
+    border-color: rgba(255, 255, 255, 0.62);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
 }
 
 .navbar-user {
@@ -99,11 +118,27 @@ body {
 
     .navbar-brand {
         font-size: 17px;
+        max-width: calc(100% - 52px);
     }
 
     .navbar-links {
         justify-content: flex-start;
         gap: 10px 14px;
+        width: 100%;
+    }
+
+    .navbar-links.is-collapsed-mobile {
+        display: none;
+    }
+
+    .navbar-links.is-open {
+        display: flex;
+    }
+
+    .navbar-toggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .navbar-account-links {
@@ -180,11 +215,24 @@ button {
     border: none;
     cursor: pointer;
     font-family: inherit;
+    transition: background-color 0.18s ease, transform 0.12s ease, box-shadow 0.18s ease;
 }
 
 .btn:hover,
 button:hover {
     background-color: #14441a;
+}
+
+.btn:active,
+button:active {
+    transform: translateY(1px);
+}
+
+.btn:focus-visible,
+button:focus-visible,
+a:focus-visible {
+    outline: 2px solid #10b981;
+    outline-offset: 2px;
 }
 
 .btn-secondary {
@@ -388,6 +436,29 @@ form textarea {
     font-weight: 600;
 }
 
+.report-table tbody tr:nth-child(even),
+.data-table tbody tr:nth-child(even) {
+    background-color: #f8fafc;
+}
+
+.report-table tbody tr:hover,
+.data-table tbody tr:hover {
+    background-color: #ecfdf5;
+}
+
+.report-table thead th,
+.data-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.table-scroll {
+    overflow: auto;
+    max-height: 420px;
+    border-radius: 10px;
+}
+
 .data-table form {
     background: transparent;
     box-shadow: none;
@@ -547,4 +618,221 @@ small {
     color: #6b7280;
     margin-top: 3px;
     margin-bottom: 6px;
+}
+
+/* ---------- Modern dashboard ---------- */
+.dash-shell {
+    font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+    display: grid;
+    gap: 18px;
+}
+
+.dash-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+}
+
+.dash-title {
+    margin: 0;
+    color: #111827;
+    font-size: 30px;
+    line-height: 1.2;
+}
+
+.dash-subtitle {
+    margin: 6px 0 0;
+    color: #4b5563;
+}
+
+.dash-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 14px;
+    margin: 8px 0 20px;
+}
+
+.dash-stat-card {
+    background: white;
+    border-radius: 16px;
+    border: 1px solid #d1fae5;
+    box-shadow: 0 10px 20px rgba(16, 185, 129, 0.08);
+    padding: 16px;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.dash-stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 26px rgba(16, 185, 129, 0.14);
+}
+
+.dash-stat-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.dash-stat-label {
+    margin: 0;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #047857;
+    font-weight: 600;
+}
+
+.dash-stat-icon {
+    color: #047857;
+    font-size: 18px;
+}
+
+.dash-stat-value {
+    margin: 0;
+    font-size: 32px;
+    color: #111827;
+    font-weight: 700;
+    line-height: 1.1;
+}
+
+.dash-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 16px;
+}
+
+.dash-grid-full {
+    grid-template-columns: 1fr;
+}
+
+.dash-card {
+    background: white;
+    border-radius: 16px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.05);
+    padding: 18px;
+}
+
+.dash-card h2 {
+    margin: 0;
+    color: #111827;
+    font-size: 22px;
+}
+
+.dash-card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+
+.dash-quick-link {
+    color: #047857;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.dash-quick-link:hover {
+    text-decoration: underline;
+}
+
+.dash-empty {
+    margin: 0;
+    color: #6b7280;
+}
+
+.dash-empty-state {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #f8fafc;
+    border: 1px dashed #cbd5e1;
+    border-radius: 12px;
+    padding: 14px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+}
+
+.dash-empty-icon {
+    font-size: 22px;
+    color: #0f766e;
+}
+
+.dash-empty-text {
+    margin: 0;
+    color: #475569;
+}
+
+.dash-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+}
+
+.dash-action-card {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    background: linear-gradient(135deg, #ecfdf5, #f8fafc);
+    border: 1px solid #bbf7d0;
+    border-radius: 14px;
+    padding: 14px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dash-action-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(16, 185, 129, 0.12);
+}
+
+.dash-action-card i {
+    color: #047857;
+    font-size: 18px;
+    margin-right: 8px;
+}
+
+.dash-action-title {
+    font-weight: 700;
+    margin: 0 0 2px;
+    color: #14532d;
+}
+
+.dash-action-copy {
+    margin: 0;
+    font-size: 13px;
+    color: #4b5563;
+}
+
+.dash-form {
+    background: transparent;
+    box-shadow: none;
+    border-radius: 0;
+    padding: 0;
+    margin: 0;
+    max-width: none;
+}
+
+.dash-form button[type="submit"] {
+    margin-top: 14px;
+}
+
+@media (max-width: 950px) {
+    .dash-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 620px) {
+    .dash-title {
+        font-size: 26px;
+    }
+
+    .dash-stat-value {
+        font-size: 28px;
+    }
 }

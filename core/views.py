@@ -51,7 +51,7 @@ def _require_role(request, expected_role):
 
 def home_redirect(request):
     if not request.user.is_authenticated:
-        return redirect('login')
+        return render(request, 'home.html')
 
     role, _ = get_user_role(request.user)
     if role == 'resident':
@@ -89,7 +89,7 @@ def login_view(request):
 
 def logout_view(request):
     logout(request)
-    return redirect('login')
+    return redirect('home')
 
 
 @login_required
