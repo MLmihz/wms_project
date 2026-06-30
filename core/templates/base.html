@@ -10,7 +10,9 @@
 </head>
 <body>
     <nav class="navbar">
-        <div class="navbar-brand">Waste Collection and Recycling Management System</div>
+        <div class="navbar-top">
+            <div class="navbar-brand">Waste Collection and Recycling Management System<span class="recycle-icon" aria-hidden="true">&#9851;</span></div>
+        </div>
 
         <div class="navbar-links">
             {% if user.is_authenticated %}
@@ -27,13 +29,24 @@
                  <a href="{% url 'manage_schedules' %}" class="nav-link">Create and Update Collection Schedules</a>
                  <a href="{% url 'manage_recycling_guides' %}" class="nav-link">Create Recycling Guides</a>
                 {% endif %}
+                {% if user.administrator %}
+                    <a href="{% url 'admin_dashboard' %}" class="nav-link">Dashboard</a>
+                    <a href="{% url 'create_admin' %}" class="nav-link">Create Admin</a>
+                    <a href="{% url 'manage_accounts' %}" class="nav-link">Manage Accounts</a>
+                    <a href="{% url 'view_system_logs' %}" class="nav-link">System Logs</a>
+                    <a href="{% url 'generate_system_reports' %}" class="nav-link">System Reports</a>
+                    <a href="{% url 'send_system_notification' %}" class="nav-link">Send Notification</a>
+                {% endif %}
 
-          
-                <span class="navbar-user">{{ user.username }}</span>
-                <a href="{% url 'logout' %}" class="nav-link">Logout</a>
+                <div class="navbar-account-links">
+                    <span class="navbar-user">{{ user.username }}</span>
+                    <a href="{% url 'logout' %}" class="nav-link">Logout</a>
+                </div>
 
             {% else %}
-                <a href="{% url 'login' %}" class="nav-link">Login</a>
+                {% if request.resolver_match.url_name != 'login' and request.resolver_match.url_name != 'register_resident' and request.resolver_match.url_name != 'register_provider' %}
+                    <a href="{% url 'login' %}" class="nav-link">Login</a>
+                {% endif %}
             {% endif %}
         </div>
     </nav>

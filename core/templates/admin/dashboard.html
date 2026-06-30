@@ -13,14 +13,6 @@
     <p><strong>Collected reports:</strong> {{ collected_reports }}</p>
 </div>
 
-<ul class="dashboard-links">
-    <li><a href="{% url 'create_admin' %}">Create New Admin</a></li>
-    <li><a href="{% url 'manage_accounts' %}">Manage Accounts</a></li>
-    <li><a href="{% url 'view_system_logs' %}">View System Logs</a></li>
-    <li><a href="{% url 'generate_system_reports' %}">Generate System Reports</a></li>
-    <li><a href="{% url 'send_system_notification' %}">Send System-wide Notification</a></li>
-</ul>
-
 <h2>Recent System Activity</h2>
 <table class="data-table">
     <tr>
