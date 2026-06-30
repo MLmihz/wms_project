@@ -19,7 +19,6 @@ from .forms import WasteReportForm
 
 
 def get_user_role(user):
-    """Return ('resident'|'provider'|'admin'|None, profile_object|None) for a logged-in User."""
     if hasattr(user, 'administrator'):
         return 'admin', user.administrator
     if hasattr(user, 'waste_service_provider'):
@@ -67,7 +66,6 @@ def login_view(request):
         if user is not None:
             role, profile = get_user_role(user)
 
-            # ACCOUNT DEACTIVATION CHECK
             if profile is not None and hasattr(profile, 'is_active') and not profile.is_active:
                 messages.error(request, "This account has been deactivated. Contact an administrator.")
                 return render(request, 'auth/login.html')
@@ -95,12 +93,20 @@ def register_resident(request):
         address = request.POST.get('address', '')
         zone = request.POST.get('zone', '')
 
+        if User.objects.filter(username=username).exists():
+            messages.error(request, "Username already taken. Please choose a different one.")
+            return render(request, 'auth/register_resident.html')
+
+        if len(password) < 8:
+            messages.error(request, "Password must be at least 8 characters long.")
+            return render(request, 'auth/register_resident.html')
+
         if password != confirm_password:
             messages.error(request, "Passwords do not match.")
             return render(request, 'auth/register_resident.html')
 
-        if User.objects.filter(username=username).exists():
-            messages.error(request, "Username already taken.")
+        if phone_number and (not phone_number.isdigit() or len(phone_number) != 10):
+            messages.error(request, "Phone number must be exactly 10 digits.")
             return render(request, 'auth/register_resident.html')
 
         user = User.objects.create_user(username=username, password=password)
@@ -126,12 +132,20 @@ def register_provider(request):
         phone_number = request.POST.get('phone_number', '')
         coverage_zone = request.POST.get('coverage_zone', '')
 
+        if User.objects.filter(username=username).exists():
+            messages.error(request, "Username already taken. Please choose a different one.")
+            return render(request, 'provider/register.html')
+
+        if len(password) < 8:
+            messages.error(request, "Password must be at least 8 characters long.")
+            return render(request, 'provider/register.html')
+
         if password != confirm_password:
             messages.error(request, "Passwords do not match.")
             return render(request, 'provider/register.html')
 
-        if User.objects.filter(username=username).exists():
-            messages.error(request, "Username already taken.")
+        if phone_number and (not phone_number.isdigit() or len(phone_number) != 10):
+            messages.error(request, "Phone number must be exactly 10 digits.")
             return render(request, 'provider/register.html')
 
         user = User.objects.create_user(username=username, password=password)
@@ -358,7 +372,6 @@ def admin_dashboard(request):
     }
     return render(request, 'admin/dashboard.html', context)
 
-# ADMIN CREATES A NEW ADMIN ACCOUNT
 
 @login_required
 def create_admin(request):
@@ -394,7 +407,6 @@ def create_admin(request):
 
     return render(request, 'admin/create_admin.html')
 
-# ADMIN VIEWS LIST OF ALL RESIDENTS AND PROVIDERS
 
 @login_required
 def manage_accounts(request):
@@ -413,8 +425,6 @@ def manage_accounts(request):
         'admins': admins,
     })
 
-
-# ADMIN TOGGLES A RESIDENT'S ACTIVE STATUS
 
 @login_required
 def toggle_resident_status(request, resident_id):
@@ -441,8 +451,6 @@ def toggle_resident_status(request, resident_id):
     return redirect('manage_accounts')
 
 
-# ADMIN TOGGLES A PROVIDER'S ACTIVE STATUS
-
 @login_required
 def toggle_provider_status(request, provider_id):
     admin_profile = _require_role(request, 'admin')
@@ -467,7 +475,6 @@ def toggle_provider_status(request, provider_id):
     messages.success(request, f"{provider.company_name} has been {action}.")
     return redirect('manage_accounts')
 
-# PROVIDER VIEWS ALL WASTE REPORTS (UNASSIGNED OR ASSIGNED TO THEM)
 
 @login_required
 def view_waste_reports(request):
@@ -484,8 +491,6 @@ def view_waste_reports(request):
         'status_choices': WasteReport.STATUS_CHOICES,
     })
 
-
-# PROVIDER ASSIGNS AN UNASSIGNED REPORT TO THEMSELVES
 
 @login_required
 def claim_report(request, report_id):
@@ -506,7 +511,6 @@ def claim_report(request, report_id):
     report.status = 'in_progress'
     report.save()
 
-    # NOTIFY THE RESIDENT
     Notification.objects.create(
         recipient_type='resident',
         recipient_id=report.resident.id,
@@ -523,8 +527,6 @@ def claim_report(request, report_id):
     messages.success(request, "Report claimed and marked in progress.")
     return redirect('view_waste_reports')
 
-
-# PROVIDER UPDATES STATUS OF A REPORT THEY ARE HANDLING
 
 @login_required
 def update_report_status(request, report_id):
@@ -619,7 +621,6 @@ def assign_collection_points(request):
     messages.success(request, f"Awarded {points} collection points to {resident.full_name}.")
     return redirect('provider_dashboard')
 
-# PROVIDER VIEWS AND CREATES COLLECTION SCHEDULES
 
 @login_required
 def manage_schedules(request):
@@ -691,8 +692,6 @@ def manage_schedules(request):
     })
 
 
-# PROVIDER DELETES A SCHEDULE
-
 @login_required
 def delete_schedule(request, schedule_id):
     provider_profile = _require_role(request, 'provider')
@@ -708,8 +707,6 @@ def delete_schedule(request, schedule_id):
     messages.success(request, "Schedule deleted.")
     return redirect('manage_schedules')
 
-
-# PROVIDER VIEWS AND CREATES RECYCLING GUIDES
 
 @login_required
 def manage_recycling_guides(request):
@@ -746,8 +743,6 @@ def manage_recycling_guides(request):
         'waste_type_choices': waste_type_choices,
     })
 
-
-# PROVIDER DELETES A RECYCLING GUIDE
 
 @login_required
 def delete_recycling_guide(request, guide_id):
