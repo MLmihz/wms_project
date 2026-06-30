@@ -92,6 +92,69 @@ def logout_view(request):
     return redirect('login')
 
 
+@login_required
+def notification_list(request):
+    role, profile = get_user_role(request.user)
+    if role is None or profile is None:
+        messages.error(request, "Your account has no assigned role. Contact an administrator.")
+        return redirect('home')
+
+    notifications = (
+        Notification.objects
+        .filter(recipient_type=role, recipient_id=profile.id)
+        .order_by('-created_at')[:100]
+    )
+    return render(request, 'notifications/list.html', {
+        'notifications': notifications,
+    })
+
+
+@login_required
+def mark_notification_read(request, notification_id):
+    if request.method != 'POST':
+        messages.error(request, "Invalid request method.")
+        return redirect('notification_list')
+
+    role, profile = get_user_role(request.user)
+    if role is None or profile is None:
+        messages.error(request, "Your account has no assigned role. Contact an administrator.")
+        return redirect('home')
+
+    notification = get_object_or_404(
+        Notification,
+        id=notification_id,
+        recipient_type=role,
+        recipient_id=profile.id,
+    )
+
+    if not notification.is_read:
+        notification.is_read = True
+        notification.save(update_fields=['is_read'])
+
+    return redirect('notification_list')
+
+
+@login_required
+def mark_all_notifications_read(request):
+    if request.method != 'POST':
+        messages.error(request, "Invalid request method.")
+        return redirect('notification_list')
+
+    role, profile = get_user_role(request.user)
+    if role is None or profile is None:
+        messages.error(request, "Your account has no assigned role. Contact an administrator.")
+        return redirect('home')
+
+    Notification.objects.filter(
+        recipient_type=role,
+        recipient_id=profile.id,
+        is_read=False,
+    ).update(is_read=True)
+
+    messages.success(request, "All notifications marked as read.")
+    return redirect('notification_list')
+
+
 def register_resident(request):
     if request.method == 'POST':
         username = request.POST.get('username', '').strip()

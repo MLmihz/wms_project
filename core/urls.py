@@ -5,6 +5,9 @@ urlpatterns = [
     path('', views.home_redirect, name='home'),
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
+    path('notifications/', views.notification_list, name='notification_list'),
+    path('notifications/<int:notification_id>/read/', views.mark_notification_read, name='mark_notification_read'),
+    path('notifications/read-all/', views.mark_all_notifications_read, name='mark_all_notifications_read'),
     path('register/resident/', views.register_resident, name='register_resident'),
     path('register/provider/', views.register_provider, name='register_provider'),
 

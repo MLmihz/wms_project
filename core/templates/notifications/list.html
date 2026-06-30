@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block title %}Notifications{% endblock %}
+
+{% block content %}
+<h1>Notifications</h1>
+
+<div class="notifications-actions">
+    <form method="POST" action="{% url 'mark_all_notifications_read' %}" class="inline-form">
+        {% csrf_token %}
+        <button type="submit">Mark all as read</button>
+    </form>
+</div>
+
+{% if notifications %}
+<table class="data-table notifications-table">
+    <tr>
+        <th>Status</th>
+        <th>Message</th>
+        <th>Received</th>
+        <th>Action</th>
+    </tr>
+    {% for notification in notifications %}
+    <tr class="{% if not notification.is_read %}notification-unread{% endif %}">
+        <td>
+            {% if notification.is_read %}
+                Read
+            {% else %}
+                Unread
+            {% endif %}
+        </td>
+        <td>{{ notification.message }}</td>
+        <td>{{ notification.created_at|date:"d M Y, H:i" }}</td>
+        <td>
+            {% if not notification.is_read %}
+            <form method="POST" action="{% url 'mark_notification_read' notification.id %}" class="inline-form">
+                {% csrf_token %}
+                <button type="submit">Mark as read</button>
+            </form>
+            {% else %}
+            -
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>No notifications yet.</p>
+{% endif %}
+{% endblock %}

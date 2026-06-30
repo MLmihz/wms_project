@@ -38,6 +38,13 @@
                     <a href="{% url 'send_system_notification' %}" class="nav-link">Send Notification</a>
                 {% endif %}
 
+                <a href="{% url 'notification_list' %}" class="nav-link">
+                    Notifications
+                    {% if unread_notifications_count %}
+                        ({{ unread_notifications_count }})
+                    {% endif %}
+                </a>
+
                 <div class="navbar-account-links">
                     <span class="navbar-user">{{ user.username }}</span>
                     <a href="{% url 'logout' %}" class="nav-link">Logout</a>

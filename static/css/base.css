@@ -286,6 +286,15 @@ form textarea {
     margin-right: 8px;
 }
 
+.notifications-actions {
+    margin-bottom: 12px;
+}
+
+.notifications-table .notification-unread td {
+    background-color: #f0fdf4;
+    font-weight: 600;
+}
+
 /* ---------- Dashboard cards ---------- */
 .dashboard-stats,
 .stats-grid {
