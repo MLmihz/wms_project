@@ -41,7 +41,13 @@
         <input type="text" name="address" id="address" value="{{ form_data.address|default:'' }}">
 
         <label for="zone">Zone</label>
-        <input type="text" name="zone" id="zone" value="{{ form_data.zone|default:'' }}" placeholder="e.g. Kilimani">
+        <select name="zone" id="zone">
+            <option value="">Select a zone</option>
+            {% for zone_name in zone_choices %}
+            <option value="{{ zone_name }}" {% if form_data.zone == zone_name %}selected{% endif %}>{{ zone_name }}</option>
+            {% endfor %}
+        </select>
+        {% if form_errors.zone %}<p class="field-error">{{ form_errors.zone }}</p>{% endif %}
 
         <button type="submit">Register</button>
     </form>

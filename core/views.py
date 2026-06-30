@@ -18,6 +18,15 @@ from .models import (
 from .forms import WasteReportForm
 
 
+ALLOWED_ZONE_CHOICES = [
+    'Karen',
+    'South-C',
+    'Langata',
+    'Kilimani',
+]
+ALLOWED_ZONES = set(ALLOWED_ZONE_CHOICES)
+
+
 def get_user_role(user):
     if hasattr(user, 'administrator'):
         return 'admin', user.administrator
@@ -107,10 +116,14 @@ def register_resident(request):
         if phone_number and (not phone_number.isdigit() or len(phone_number) != 10):
             form_errors['phone_number'] = "Phone number must be exactly 10 digits."
 
+        if zone and zone not in ALLOWED_ZONES:
+            form_errors['zone'] = "Please select a valid zone."
+
         if form_errors:
             messages.error(request, "Please correct the highlighted errors and try again.")
             return render(request, 'auth/register_resident.html', {
                 'form_errors': form_errors,
+                'zone_choices': ALLOWED_ZONE_CHOICES,
                 'form_data': {
                     'username': username,
                     'full_name': full_name,
@@ -131,7 +144,9 @@ def register_resident(request):
         messages.success(request, "Registration successful. Please log in.")
         return redirect('login')
 
-    return render(request, 'auth/register_resident.html')
+    return render(request, 'auth/register_resident.html', {
+        'zone_choices': ALLOWED_ZONE_CHOICES,
+    })
 
 
 def register_provider(request):
@@ -157,10 +172,14 @@ def register_provider(request):
         if phone_number and (not phone_number.isdigit() or len(phone_number) != 10):
             form_errors['phone_number'] = "Phone number must be exactly 10 digits."
 
+        if coverage_zone and coverage_zone not in ALLOWED_ZONES:
+            form_errors['coverage_zone'] = "Please select a valid zone."
+
         if form_errors:
             messages.error(request, "Please correct the highlighted errors and try again.")
             return render(request, 'provider/register.html', {
                 'form_errors': form_errors,
+                'zone_choices': ALLOWED_ZONE_CHOICES,
                 'form_data': {
                     'company_name': company_name,
                     'username': username,
@@ -179,7 +198,9 @@ def register_provider(request):
         messages.success(request, "Registration successful. Please log in.")
         return redirect('login')
 
-    return render(request, 'provider/register.html')
+    return render(request, 'provider/register.html', {
+        'zone_choices': ALLOWED_ZONE_CHOICES,
+    })
 
 
 @login_required
@@ -665,6 +686,10 @@ def manage_schedules(request):
         collection_time = request.POST.get('collection_time')
         notes = request.POST.get('notes', '')
 
+        if zone not in ALLOWED_ZONES:
+            messages.error(request, "Please select a valid zone.")
+            return redirect('manage_schedules')
+
         if waste_type not in valid_waste_types:
             messages.error(request, "Invalid waste type selected.")
             return redirect('manage_schedules')
@@ -709,6 +734,7 @@ def manage_schedules(request):
     return render(request, 'provider/manage_schedules.html', {
         'schedules': schedules,
         'waste_type_choices': waste_type_choices,
+        'zone_choices': ALLOWED_ZONE_CHOICES,
         'edit_schedule': edit_schedule,
     })
 

@@ -12,7 +12,12 @@
     {% endif %}
 
     <label for="zone">Zone</label>
-    <input type="text" name="zone" id="zone" value="{{ edit_schedule.zone|default:'' }}" required>
+    <select name="zone" id="zone" required>
+        <option value="">Select a zone</option>
+        {% for zone_name in zone_choices %}
+        <option value="{{ zone_name }}" {% if edit_schedule and edit_schedule.zone == zone_name %}selected{% endif %}>{{ zone_name }}</option>
+        {% endfor %}
+    </select>
 
     <label for="waste_type">Waste Type</label>
     <select name="waste_type" id="waste_type" required>

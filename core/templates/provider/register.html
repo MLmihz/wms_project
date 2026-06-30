@@ -37,7 +37,13 @@
         <small>Must be exactly 10 digits</small>
 
         <label for="coverage_zone">Coverage Zone</label>
-        <input type="text" name="coverage_zone" id="coverage_zone" value="{{ form_data.coverage_zone|default:'' }}">
+        <select name="coverage_zone" id="coverage_zone">
+            <option value="">Select a zone</option>
+            {% for zone_name in zone_choices %}
+            <option value="{{ zone_name }}" {% if form_data.coverage_zone == zone_name %}selected{% endif %}>{{ zone_name }}</option>
+            {% endfor %}
+        </select>
+        {% if form_errors.coverage_zone %}<p class="field-error">{{ form_errors.coverage_zone }}</p>{% endif %}
 
         <button type="submit">Create Provider Account</button>
     </form>
