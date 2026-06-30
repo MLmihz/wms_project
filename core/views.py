@@ -85,29 +85,40 @@ def logout_view(request):
 
 def register_resident(request):
     if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        confirm_password = request.POST.get('confirm_password')
-        full_name = request.POST.get('full_name')
-        phone_number = request.POST.get('phone_number', '')
-        address = request.POST.get('address', '')
-        zone = request.POST.get('zone', '')
+        username = request.POST.get('username', '').strip()
+        password = request.POST.get('password', '')
+        confirm_password = request.POST.get('confirm_password', '')
+        full_name = request.POST.get('full_name', '').strip()
+        phone_number = request.POST.get('phone_number', '').strip()
+        address = request.POST.get('address', '').strip()
+        zone = request.POST.get('zone', '').strip()
+
+        form_errors = {}
 
         if User.objects.filter(username=username).exists():
-            messages.error(request, "Username already taken. Please choose a different one.")
-            return render(request, 'auth/register_resident.html')
+            form_errors['username'] = "Username already taken. Please choose a different one."
 
         if len(password) < 8:
-            messages.error(request, "Password must be at least 8 characters long.")
-            return render(request, 'auth/register_resident.html')
+            form_errors['password'] = "Password must be at least 8 characters long."
 
         if password != confirm_password:
-            messages.error(request, "Passwords do not match.")
-            return render(request, 'auth/register_resident.html')
+            form_errors['confirm_password'] = "Passwords do not match."
 
         if phone_number and (not phone_number.isdigit() or len(phone_number) != 10):
-            messages.error(request, "Phone number must be exactly 10 digits.")
-            return render(request, 'auth/register_resident.html')
+            form_errors['phone_number'] = "Phone number must be exactly 10 digits."
+
+        if form_errors:
+            messages.error(request, "Please correct the highlighted errors and try again.")
+            return render(request, 'auth/register_resident.html', {
+                'form_errors': form_errors,
+                'form_data': {
+                    'username': username,
+                    'full_name': full_name,
+                    'phone_number': phone_number,
+                    'address': address,
+                    'zone': zone,
+                },
+            })
 
         user = User.objects.create_user(username=username, password=password)
         Resident.objects.create(
@@ -125,28 +136,38 @@ def register_resident(request):
 
 def register_provider(request):
     if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        confirm_password = request.POST.get('confirm_password')
-        company_name = request.POST.get('company_name')
-        phone_number = request.POST.get('phone_number', '')
-        coverage_zone = request.POST.get('coverage_zone', '')
+        username = request.POST.get('username', '').strip()
+        password = request.POST.get('password', '')
+        confirm_password = request.POST.get('confirm_password', '')
+        company_name = request.POST.get('company_name', '').strip()
+        phone_number = request.POST.get('phone_number', '').strip()
+        coverage_zone = request.POST.get('coverage_zone', '').strip()
+
+        form_errors = {}
 
         if User.objects.filter(username=username).exists():
-            messages.error(request, "Username already taken. Please choose a different one.")
-            return render(request, 'provider/register.html')
+            form_errors['username'] = "Username already taken. Please choose a different one."
 
         if len(password) < 8:
-            messages.error(request, "Password must be at least 8 characters long.")
-            return render(request, 'provider/register.html')
+            form_errors['password'] = "Password must be at least 8 characters long."
 
         if password != confirm_password:
-            messages.error(request, "Passwords do not match.")
-            return render(request, 'provider/register.html')
+            form_errors['confirm_password'] = "Passwords do not match."
 
         if phone_number and (not phone_number.isdigit() or len(phone_number) != 10):
-            messages.error(request, "Phone number must be exactly 10 digits.")
-            return render(request, 'provider/register.html')
+            form_errors['phone_number'] = "Phone number must be exactly 10 digits."
+
+        if form_errors:
+            messages.error(request, "Please correct the highlighted errors and try again.")
+            return render(request, 'provider/register.html', {
+                'form_errors': form_errors,
+                'form_data': {
+                    'company_name': company_name,
+                    'username': username,
+                    'phone_number': phone_number,
+                    'coverage_zone': coverage_zone,
+                },
+            })
 
         user = User.objects.create_user(username=username, password=password)
         WasteServiceProvider.objects.create(

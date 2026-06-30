@@ -16,29 +16,33 @@
         {% csrf_token %}
 
         <label for="company_name">Company Name</label>
-        <input type="text" name="company_name" id="company_name" required>
+        <input type="text" name="company_name" id="company_name" value="{{ form_data.company_name|default:'' }}" required>
 
         <label for="username">Username</label>
-        <input type="text" name="username" id="username" required>
+        <input type="text" name="username" id="username" value="{{ form_data.username|default:'' }}" required>
+        {% if form_errors.username %}<p class="field-error">{{ form_errors.username }}</p>{% endif %}
 
         <label for="password">Password</label>
         <input type="password" name="password" id="password" minlength="8" required>
+        {% if form_errors.password %}<p class="field-error">{{ form_errors.password }}</p>{% endif %}
         <small>Minimum 8 characters</small>
 
         <label for="confirm_password">Confirm Password</label>
         <input type="password" name="confirm_password" id="confirm_password" minlength="8" required>
+        {% if form_errors.confirm_password %}<p class="field-error">{{ form_errors.confirm_password }}</p>{% endif %}
         <small>Minimum 8 characters</small>
         <label for="phone_number">Phone Number</label>
-        <input type="text" name="phone_number" id="phone_number" pattern="\d{10}" maxlength="10" placeholder="10 digits only">
+        <input type="text" name="phone_number" id="phone_number" value="{{ form_data.phone_number|default:'' }}" pattern="\d{10}" maxlength="10" inputmode="numeric" placeholder="10 digits only">
+        {% if form_errors.phone_number %}<p class="field-error">{{ form_errors.phone_number }}</p>{% endif %}
         <small>Must be exactly 10 digits</small>
 
         <label for="coverage_zone">Coverage Zone</label>
-        <input type="text" name="coverage_zone" id="coverage_zone">
+        <input type="text" name="coverage_zone" id="coverage_zone" value="{{ form_data.coverage_zone|default:'' }}">
 
         <button type="submit">Create Provider Account</button>
     </form>
 
     <p>Already registered? <a href="{% url 'login' %}">Login here</a></p>
 </div>
-<script src="{% static 'js/auth/register_validation.js' %}"></script>
+<script src="{% static 'js/auth/resident_validation.js' %}"></script>
 {% endblock %}
